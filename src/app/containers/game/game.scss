@@ -1,0 +1,110 @@
+.header {
+  padding-top: 40px;
+}
+
+@import "src/variables";
+
+.title {
+  color: #FFF;
+  text-align: center;
+  font-size: 72px;
+  font-family: Lora, sans-serif;
+  font-weight: 400;
+  background: -webkit-linear-gradient(#FFF, $secondary-color);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.game-config {
+  margin-top: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.game-section {
+  margin-top: 40px;
+  height: 100%;
+  display: flex;
+  padding-bottom: 40px;
+}
+
+.game-field {
+  width: 50%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 40%;
+}
+
+.background-wrapper {
+  background: rgba(167, 171, 174, 0.08);
+  padding: 2rem;
+  border-radius: 30px;
+}
+
+.text {
+  &-key {
+    color: #800080;
+    font-size: 48px;
+  }
+
+  &-value {
+    font-size: 48px;
+  }
+}
+
+.game-control-wrapper {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+
+.game-control {
+  display: flex;
+}
+
+.game-statistic {
+  margin-bottom: 100px;
+}
+
+.btn {
+  background: #FFFFFF;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 48px;
+  padding: 1rem 2rem;
+  min-height: 60px;
+
+  &-white {
+    color: #4E0C4B;
+  }
+
+  &-purple {
+    color: #FFF;
+    background-color: $main-color;
+  }
+
+  &-word {
+    background: $main-color;
+    border-radius: 30px;
+    font-size: 24px;
+
+    &:hover{
+      background-color: $main-color-hover;
+      box-shadow: 0 0 10px 3px rgba(255, 255, 255, .2);
+    }
+  }
+}
+
+.mb-40 {
+  margin-bottom: 40px;
+}

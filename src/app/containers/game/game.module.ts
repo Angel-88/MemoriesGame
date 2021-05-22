@@ -11,5 +11,4 @@ import { GameRouting } from './game.routing';
   ],
   declarations: [ GameComponent ],
 })
-export class GameModule {
-}
+export class GameModule {}

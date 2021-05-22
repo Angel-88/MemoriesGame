@@ -1,1 +1,63 @@
-<h1>Game works!</h1>
+<div class="container">
+  <header class="header">
+    <h1 class="title">Memories words</h1>
+  </header>
+  <div *ngIf="!isStudyGameStarted && !isTestGameStarted" class="game-config">
+    <button class="btn btn-white mb-40" (click)="startStudyGame()">Study</button>
+    <button class="btn btn-purple" (click)="startTestGame()">Start test</button>
+  </div>
+  <div *ngIf="isStudyGameStarted || isTestGameStarted" class="game-section">
+    <div class="game-field background-wrapper">
+      <div class="column">
+        <ng-container *ngFor="let word of dictionary">
+          <button [disabled]="!word.isVisible" class="btn btn-word" (click)="clickToWordColumn1(word)">
+            <span *ngIf="word.isVisible">
+              {{word.text}}
+            </span>
+          </button>
+        </ng-container>
+      </div>
+      <div class="column">
+        <ng-container *ngFor="let word of dictionary">
+          <button [disabled]="!word.isVisible" class="btn btn-word" (click)="clickToWordColumn2(word)">
+             <span *ngIf="word.isVisible">
+               {{word.text}}
+             </span>
+          </button>
+        </ng-container>
+      </div>
+    </div>
+    <div class="game-control-wrapper">
+      <div class="game-statistic">
+        <div class="background-wrapper">
+         <span class="text-key">
+            Time:
+          </span>
+          <span class="text-value">
+          {{minutesToDday}} : {{secondsToDday}}
+          </span>
+        </div>
+        <div class="background-wrapper">
+          <span class="text-key">
+            Score:
+          </span>
+          <span class="text-value">
+            {{score}}
+          </span>
+        </div>
+      </div>
+      <div class="game-control">
+        <div *ngIf="isStudyGameStarted" class="studyGameControl">
+          <button *ngIf="!isStudyGameRunning" class="btn btn-white" (click)="runStudyGame()">Start-stud</button>
+          <button *ngIf="isStudyGameRunning" class="btn btn-white" (click)="stopStudyGame()">Finish-stud</button>
+        </div>
+        <div *ngIf="isTestGameStarted" class="testGameControl">
+          <button *ngIf="!isTestGameRunning" class="btn btn-white" (click)="runTestGame()">Start-test</button>
+          <button *ngIf="isTestGameRunning" class="btn btn-white" (click)="stopTestGame()">Finish-test</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>

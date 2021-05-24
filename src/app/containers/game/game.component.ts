@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { interval, Subscription } from 'rxjs';
+import { SimpleTimer } from 'ng2-simple-timer';
 
 export class Word {
   text: string;
@@ -26,14 +26,19 @@ export class GameComponent implements OnInit {
   tmp2 = '';
   compare = false;
 
+  timerCounter = 60;
+  timerId?: string;
+  timerName: string = '60 sec';
+  timerButton = 'Start';
+
+  constructor(private readonly simpleTimer: SimpleTimer) {}
+
   ngOnInit() {
     for (let i = 0; i < 10; i++) {
       let num = Math.floor(Math.random() * 10);
       this.dictionary.push(new Word('car' + num, true));
       this.dictionary.sort();
     }
-    this.subscription = interval(1000)
-      .subscribe(x => { this.getTimeDifference(); });
   }
 
   startStudyGame() {
@@ -61,6 +66,8 @@ export class GameComponent implements OnInit {
 
   runTestGame() {
     this.isTestGameRunning = true;
+    this.simpleTimer.newTimer(this.timerName, 1, true);
+    this.subscribeTimer();
   }
 
   clickToWordColumn1(word: Word) {
@@ -78,36 +85,28 @@ export class GameComponent implements OnInit {
 
   }
 
-  private subscription!: Subscription;
-
-  public dateNow = new Date();
-  public dDay = new Date(this.dateNow.setMinutes(this.dateNow.getMinutes() + 1));
-  milliSecondsInASecond = 1000;
-  hoursInADay = 24;
-  minutesInAnHour = 60;
-  SecondsInAMinute = 60;
-
-  public timeDifference;
-  public secondsToDday;
-  public minutesToDday;
-  public hoursToDday;
-  public daysToDday;
-
-
-  private getTimeDifference() {
-    this.timeDifference = this.dDay.getTime() - new Date().getTime();
-    this.allocateTimeUnits(this.timeDifference);
+  subscribeTimer() {
+    if (this.timerId) {
+      // Unsubscribe if timer Id is defined
+      this.simpleTimer.unsubscribe(this.timerId);
+      this.timerId = undefined;
+      this.timerButton = 'Subscribe';
+      console.log('timer 0 Unsubscribed.');
+    } else {
+      // Subscribe if timer Id is undefined
+      this.timerId = this.simpleTimer.subscribe(this.timerName, () => this.timerCallback());
+      this.timerButton = 'Unsubscribe';
+      console.log('timer 0 Subscribed.');
+    }
+    console.log(this.simpleTimer.getSubscription());
   }
 
-  private allocateTimeUnits(timeDifference: number) {
-    this.secondsToDday = Math.floor((timeDifference) / (this.milliSecondsInASecond) % this.SecondsInAMinute);
-    this.minutesToDday = Math.floor((timeDifference) / (this.milliSecondsInASecond * this.minutesInAnHour) % this.SecondsInAMinute);
-    this.hoursToDday = Math.floor((timeDifference) / (this.milliSecondsInASecond * this.minutesInAnHour * this.SecondsInAMinute) % this.hoursInADay);
-    this.daysToDday = Math.floor((timeDifference) / (this.milliSecondsInASecond * this.minutesInAnHour * this.SecondsInAMinute * this.hoursInADay));
-  }
-
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
+  timerCallback(): void {
+    this.timerCounter--;
+    if (this.timerCounter === 0) {
+      this.timerCounter = 60;
+      this.subscribeTimer();
+    }
   }
 }
 

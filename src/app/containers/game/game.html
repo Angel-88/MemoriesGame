@@ -12,7 +12,7 @@
         <ng-container *ngFor="let word of dictionary">
           <button [disabled]="!word.isVisible" class="btn btn-word" (click)="clickToWordColumn1(word)">
             <span *ngIf="word.isVisible">
-              {{word.text}}
+              {{word.translateWord}}
             </span>
           </button>
         </ng-container>
@@ -21,7 +21,7 @@
         <ng-container *ngFor="let word of dictionary">
           <button [disabled]="!word.isVisible" class="btn btn-word" (click)="clickToWordColumn2(word)">
              <span *ngIf="word.isVisible">
-               {{word.text}}
+               {{word.word}}
              </span>
           </button>
         </ng-container>
@@ -59,8 +59,8 @@
           <button *ngIf="isStudyGameRunning" class="btn btn-white" (click)="stopStudyGame()">Finish-stud</button>
         </div>
         <div *ngIf="isTestGameStarted" class="testGameControl">
-          <button *ngIf="!isTestGameRunning" class="btn btn-white" (click)="runTestGame()">Start-test</button>
-          <button *ngIf="isTestGameRunning" class="btn btn-white" (click)="stopTestGame()">Finish-test</button>
+          <button *ngIf="!isTestGameRunning" class="btn btn-white" (click)="runTestGame()">{{timerButton}}-test</button>
+          <button *ngIf="isTestGameRunning" class="btn btn-white" (click)="stopTestGame()">{{timerButton}}-test</button>
         </div>
       </div>
     </div>

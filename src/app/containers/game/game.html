@@ -31,7 +31,7 @@
     <div class="game-control-wrapper">
       <div class="game-statistic">
         <div
-          *ngIf="instance.gameType === gameTypeEnum.TEST"
+          *ngIf="instance?.gameType === gameTypeEnum.TEST"
           class="background-wrapper statistic-item-wrapper">
           <span class="statistic-item-label">
             timer:
@@ -41,7 +41,7 @@
           </span>
         </div>
         <div
-          *ngIf="instance.gameType === gameTypeEnum.TEST"
+          *ngIf="instance?.gameType === gameTypeEnum.TEST"
           class="background-wrapper statistic-item-wrapper">
           <span class="statistic-item-label">
             words:
@@ -112,18 +112,18 @@
             Words:
           </span>
           <span
-            *ngIf="instance.gameType === gameTypeEnum.TEST"
+            *ngIf="instance?.gameType === gameTypeEnum.TEST"
             class="statistic-item-value">
            {{wordsProgress}} / {{sizeWordsRange}}
           </span>
           <span
-            *ngIf="instance.gameType === gameTypeEnum.STUDY"
+            *ngIf="instance?.gameType === gameTypeEnum.STUDY"
             class="statistic-item-value">
            {{wordsProgress}}
           </span>
         </div>
         <div
-          *ngIf="instance.gameType === gameTypeEnum.TEST"
+          *ngIf="instance?.gameType === gameTypeEnum.TEST"
           class="statistic-item-wrapper">
           <span class="statistic-item-label">
             Wrong:
@@ -137,23 +137,23 @@
             Mistake:
           </span>
           <span
-            *ngIf="mistake && instance.gameType === gameTypeEnum.TEST"
+            *ngIf="mistake && instance?.gameType === gameTypeEnum.TEST"
             class="statistic-item-value">
            {{mistake}} - {{mistake / (mistake + wordsProgress) * 100 | number : '1.0-0'}}%
           </span>
           <span
-            *ngIf="!mistake  && instance.gameType === gameTypeEnum.TEST"
+            *ngIf="!mistake  && instance?.gameType === gameTypeEnum.TEST"
             class="statistic-item-value">
            {{mistake}}%
           </span>
           <span
-            *ngIf="instance.gameType === gameTypeEnum.STUDY"
+            *ngIf="instance?.gameType === gameTypeEnum.STUDY"
             class="statistic-item-value">
            {{mistake}}
           </span>
         </div>
         <div
-          *ngIf="instance.gameType === gameTypeEnum.TEST"
+          *ngIf="instance?.gameType === gameTypeEnum.TEST"
           class="statistic-item-wrapper">
           <span class="statistic-item-label">
             Time:
@@ -163,7 +163,7 @@
           </span>
         </div>
         <div
-          *ngIf="instance.gameType === gameTypeEnum.TEST"
+          *ngIf="instance?.gameType === gameTypeEnum.TEST"
           class="statistic-item-wrapper">
           <span class="statistic-item-label">
             Av. answer time:

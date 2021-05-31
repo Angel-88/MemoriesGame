@@ -60,6 +60,11 @@ export class GameComponent implements OnInit {
     }
     this.instance = ConfigsFactory.getInstance(gameType);
     this.gameConfig = this.instance.getGameConfig();
+    this.wordsColumns = [];
+    this.wordsProgress = 0;
+    this.score = 0;
+    this.mistake = 0;
+    this.wordsRangeStartIndex = 0;
   }
 
   runGame(): void {

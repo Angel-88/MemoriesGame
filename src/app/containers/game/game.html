@@ -11,7 +11,7 @@
       <div class="column" *ngFor="let wordsColumn of wordsColumns; let columnIndex = index">
         <ng-container *ngFor="let word of wordsColumn">
           <button
-            [disabled]="!word.isVisible || !instance.isGameRunning() || (columnIndex === 1 && !selectedWord)"
+            [disabled]="!word.isVisible || !instance?.isGameRunning() || (columnIndex === 1 && !selectedWord)"
             class="btn btn-word"
             [class.opacity-zero]="!word.isVisible"
             [class.btn-scale]="columnIndex === 0 && this.selectedWord?.id === word.id || columnIndex === 1 && this.selectedTranslateWord?.id === word.id"
@@ -68,11 +68,11 @@
           *ngIf="gameConfig"
           class="testGameControl">
           <button
-            *ngIf="!instance.isGameRunning()"
+            *ngIf="!instance?.isGameRunning()"
             class="btn btn-white"
             (click)="runGame()">{{timerButton}}</button>
           <button
-            *ngIf="instance.isGameRunning()"
+            *ngIf="instance?.isGameRunning()"
             class="btn btn-white"
             (click)="stopGame()">{{timerButton}}</button>
         </div>

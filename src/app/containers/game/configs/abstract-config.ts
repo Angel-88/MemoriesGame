@@ -4,6 +4,7 @@ import {GameConfig} from '../game.component';
 export abstract class AbstractConfig {
 
   isGameStarted = false;
+  gameType!: GameTypeEnum;
 
   abstract checkType(gameType: GameTypeEnum): boolean;
 

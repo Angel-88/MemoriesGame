@@ -4,6 +4,8 @@ import {GameConfig} from '../game.component';
 
 export class TestGameConfig extends AbstractConfig {
 
+  gameType = GameTypeEnum.TEST;
+
   checkType(gameType: GameTypeEnum): boolean {
     return gameType === GameTypeEnum.TEST;
   }

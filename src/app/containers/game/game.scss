@@ -60,14 +60,14 @@
   &-item-label {
     color: #800080;
     font-size: 36px;
-    width: 50%;
+    width: 60%;
   }
 
   &-item-value {
     text-align: center;
     margin-left: 10px;
     font-size: 36px;
-    width: 50%;
+    width: 40%;
   }
 }
 
@@ -80,6 +80,7 @@
 
 .game-control {
   display: flex;
+  justify-content: flex-end;
 }
 
 .game-statistic {
@@ -168,7 +169,7 @@
   &-dialog {
     position: relative;
     width: auto;
-    max-width: 500px;
+    max-width: 600px;
     margin: 10rem auto;
     pointer-events: none;
   }

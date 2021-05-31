@@ -1,104 +1,162 @@
-import { Component, OnInit } from '@angular/core';
-import { SimpleTimer } from 'ng2-simple-timer';
-import { WordRequestDto } from '../../rest/words/word.request.dto';
+import {Component, OnInit} from '@angular/core';
+import {SimpleTimer} from 'ng2-simple-timer';
+import {WordResponseDto} from '../../rest/words/word.response.dto';
+import {Observable} from 'rxjs';
+import {WordsService} from '../../rest/words/words.service';
+import {ConfigsFactory} from './configs/configs-factory';
+import {GameTypeEnum} from './shared/enums/game-type.enum';
+import {AbstractConfig} from './configs/abstract-config';
+
+export class GameConfig {
+  statisticConfig!: string[];
+}
 
 @Component({
   templateUrl: './game.html',
-  styleUrls: [ './game.scss' ],
+  styleUrls: ['./game.scss'],
 })
 export class GameComponent implements OnInit {
-  isStudyGameStarted = false;
-  isTestGameStarted = false;
-  isStudyGameRunning = false;
-  isTestGameRunning = false;
   score = 0;
-  dictionary: WordRequestDto[] = [];
-  tmp1 = '';
-  tmp2 = '';
-  compare = false;
+  selectedWord!: WordResponseDto;
+  selectedTranslateWord!: WordResponseDto;
+  notEqual = {isNotEqual: false, selectedWordId: '', selectedTranslateWordId: ''};
+  words$!: Observable<WordResponseDto[]>;
+  responseWords: WordResponseDto[] = [];
+  words: WordResponseDto[] = [];
+  wordsRandom: WordResponseDto[] = [];
+  wordsColumns: WordResponseDto[][] = [];
 
   timerCounter = 60;
-  timerId?: string;
-  timerName: string = '60 sec';
+  timerId!: string | null;
+  timerName = '60 sec';
   timerButton = 'Start';
+  gameTypeEnum = GameTypeEnum;
 
-  constructor(private readonly simpleTimer: SimpleTimer) {}
+  gameConfig!: GameConfig | null;
+  wordsProgress = 0;
+  mistake = 0;
+  instance!: AbstractConfig | null;
+  wordsRange: WordResponseDto[] = [];
+  wordsRangeStartIndex = 0;
+  sizeWordsRange = 10;
+  wordsRangeEndIndex = this.sizeWordsRange;
 
-  ngOnInit() {
-    for (let i = 0; i < 10; i++) {
-      let num = Math.floor(Math.random() * 10);
-      const word: WordRequestDto =  {word:'car'+ num,isVisible: true, translateWord: 'автомобіль'};
-      this.dictionary.push(new WordRequestDto(word));
-      this.dictionary.sort();
+  startGameTime!: number;
+  endGameTime!: number;
+  totalGameTime!: Date;
+
+  isModalShow = false;
+
+  constructor(private readonly simpleTimer: SimpleTimer,
+              private readonly wordsService: WordsService) {}
+
+  ngOnInit(): void {
+    this.initWords();
+  }
+
+  initGame(gameType: GameTypeEnum): void {
+    if (gameType === GameTypeEnum.STUDY) {
+      this.timerCounter = 9999;
     }
+    this.instance = ConfigsFactory.getInstance(gameType);
+    this.gameConfig = this.instance.getGameConfig();
   }
 
-  startStudyGame() {
-    this.isStudyGameStarted = true;
-  }
-
-  stopStudyGame() {
-    this.isStudyGameStarted = false;
-    this.isStudyGameRunning = false;
-  }
-
-  startTestGame() {
-    this.isTestGameStarted = true;
-  }
-
-  stopTestGame() {
-    this.isTestGameStarted = false;
-    this.isTestGameRunning = false;
-    this.subscribeTimer();
-  }
-
-  runStudyGame() {
-    this.isStudyGameRunning = true;
-  }
-
-  runTestGame() {
-    this.isTestGameRunning = true;
+  runGame(): void {
+    this.wordsColumns = [];
+    this.wordsProgress = 0;
+    this.score = 0;
+    this.mistake = 0;
+    this.wordsRangeStartIndex = 0;
+    this.wordsRangeEndIndex = this.sizeWordsRange;
+    this.words = this.shuffle(this.responseWords).map(word => new WordResponseDto(word));
+    const wordsRange = this.getWordsRange(this.wordsRangeStartIndex, this.wordsRangeEndIndex, this.words);
+    this.wordsColumns.push(wordsRange);
+    this.wordsRandom = this.shuffle(wordsRange);
+    this.wordsColumns.push(this.wordsRandom);
+    this.instance?.setIsGameRunning(true);
     this.simpleTimer.newTimer(this.timerName, 1, true);
     this.subscribeTimer();
+    this.startGameTime = new Date().getTime();
   }
 
-  clickToWordColumn1(word: WordRequestDto) {
-    console.log(word);
-    this.tmp1 = word.word;
-    console.log('tmp1 = ', this.tmp1);
+  stopGame(): void {
+    this.endGameTime = new Date().getTime();
+    this.totalGameTime = new Date(this.endGameTime - this.startGameTime);
+    this.instance?.setIsGameRunning(false);
+    this.subscribeTimer();
+    this.gameConfig = null;
+    this.wordsColumns = [];
+    this.isModalShow = true;
   }
 
-  clickToWordColumn2(word: WordRequestDto) {
-    this.tmp2 = word.word;
-    console.log('tmp2 = ', this.tmp2);
-    word.isVisible = !(this.tmp1 === this.tmp2);
-    this.tmp1 = this.tmp2 = '';
-    console.log(word.isVisible);
+  getWordsRange(startIndex: number, endIndex: number, array: WordResponseDto[]): WordResponseDto[] {
+    return array.slice(startIndex, endIndex);
   }
 
-  private subscribeTimer() {
+  clickToWord(columnIndex: number, word: WordResponseDto): void {
+    if (columnIndex === 0) {
+      this.selectedWord = word;
+    } else {
+      this.selectedTranslateWord = word;
+      const equal = this.selectedWord.id === this.selectedTranslateWord.id;
+      if (equal) {
+        this.wordsProgress++;
+        this.score++;
+      } else {
+        this.mistake++;
+      }
+      this.notEqual.isNotEqual = !equal;
+      this.notEqual.selectedWordId = this.selectedWord.id;
+      this.notEqual.selectedTranslateWordId = this.selectedTranslateWord.id;
+      setTimeout(() => {
+        word.isVisible = !equal;
+        this.notEqual = {isNotEqual: false, selectedWordId: '', selectedTranslateWordId: ''};
+        if (this.wordsProgress === this.sizeWordsRange) {
+          this.wordsProgress = 0;
+          this.wordsColumns = [];
+          const wordsRange = this.getWordsRange(this.wordsRangeStartIndex += this.sizeWordsRange,
+            this.wordsRangeEndIndex += this.sizeWordsRange, this.words);
+          this.wordsColumns.push(wordsRange);
+          this.wordsRandom = this.shuffle(wordsRange);
+          this.wordsColumns.push(this.wordsRandom);
+        }
+      }, 300);
+      this.selectedWord = this.selectedTranslateWord = {word: '', translateWord: '', id: '', isVisible: false};
+    }
+  }
+
+  private initWords(): void {
+    this.words$ = this.wordsService.getWords();
+    this.words$.subscribe(responseWords => {
+      this.responseWords = responseWords;
+      this.responseWords = this.responseWords.map(word => new WordResponseDto(word));
+    });
+  }
+
+  private subscribeTimer(): void {
     if (this.timerId) {
-      // Unsubscribe if timer Id is defined
       this.simpleTimer.unsubscribe(this.timerId);
-      this.timerId = undefined;
+      this.timerId = null;
       this.timerButton = 'Start';
       this.timerCounter = 60;
-      console.log('timer 0 Unsubscribed.');
     } else {
-      // Subscribe if timer Id is undefined
       this.timerId = this.simpleTimer.subscribe(this.timerName, () => this.timerCallback());
       this.timerButton = 'Finish';
-      console.log('timer 0 Subscribed.');
     }
-    console.log(this.simpleTimer.getSubscription());
   }
 
   private timerCallback(): void {
     this.timerCounter--;
     if (this.timerCounter === 0) {
+      this.stopGame();
       this.timerCounter = 60;
       this.subscribeTimer();
     }
+  }
+
+  shuffle(array: WordResponseDto[]): WordResponseDto[] {
+    return [...array].sort(() => Math.random() - 0.5);
   }
 }
 

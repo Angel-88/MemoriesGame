@@ -2,69 +2,160 @@
   <header class="header">
     <h1 class="title">Memories words</h1>
   </header>
-  <div *ngIf="!isStudyGameStarted && !isTestGameStarted" class="game-config">
-    <button class="btn btn-white mb-40" (click)="startStudyGame()">Study</button>
-    <button class="btn btn-purple" (click)="startTestGame()">Start test</button>
+  <div *ngIf="!gameConfig && !isModalShow" class="game-config">
+    <button class="btn btn-white mb-40" (click)="initGame(gameTypeEnum.STUDY)">Study</button>
+    <button class="btn btn-purple" (click)="initGame(gameTypeEnum.TEST)">Start test</button>
   </div>
-  <div *ngIf="isStudyGameStarted || isTestGameStarted" class="game-section">
+  <div *ngIf="gameConfig" class="game-section">
     <div class="game-field background-wrapper">
-      <div class="column">
-        <ng-container *ngFor="let word of dictionary">
-          <button [disabled]="!word.isVisible" class="btn btn-word" (click)="clickToWordColumn1(word)">
-            <span *ngIf="word.isVisible">
-              {{word.translateWord}}
+      <div class="column" *ngFor="let wordsColumn of wordsColumns; let columnIndex = index">
+        <ng-container *ngFor="let word of wordsColumn">
+          <button
+            [disabled]="!word.isVisible || !instance.isGameRunning() || (columnIndex === 1 && !selectedWord)"
+            class="btn btn-word"
+            [class.opacity-zero]="!word.isVisible"
+            [class.btn-scale]="columnIndex === 0 && this.selectedWord?.id === word.id || columnIndex === 1 && this.selectedTranslateWord?.id === word.id"
+            [class.btn-not-equal]="notEqual.isNotEqual && (columnIndex === 0  && notEqual.selectedWordId === word.id) || (columnIndex === 1  && notEqual.selectedTranslateWordId === word.id)"
+            [class.btn-equal]="!notEqual.isNotEqual && notEqual.selectedWordId === word.id"
+            (click)="clickToWord(columnIndex, word)">
+            <span *ngIf="columnIndex === 0">
+              {{word.word.toLowerCase()}}
             </span>
-          </button>
-        </ng-container>
-      </div>
-      <div class="column">
-        <ng-container *ngFor="let word of dictionary">
-          <button [disabled]="!word.isVisible" class="btn btn-word" (click)="clickToWordColumn2(word)">
-             <span *ngIf="word.isVisible">
-               {{word.word}}
-             </span>
+            <span *ngIf="columnIndex === 1">
+              {{word.translateWord.toLowerCase()}}
+            </span>
           </button>
         </ng-container>
       </div>
     </div>
     <div class="game-control-wrapper">
       <div class="game-statistic">
-        <div class="background-wrapper">
-         <span class="text-key">
-            Time:
-          </span>
-          <span class="text-value">
-            {{timerCounter}}
-          </span>
-          <span class="text-key">
-            Word left:
-          </span>
-          <span class="text-value">
-            {{score}}
-          </span>
-        </div>
-        <div class="background-wrapper">
-
-          <span class="text-key">
-            Score:
-          </span>
-          <span class="text-value">
-            {{score}}
-          </span>
-        </div>
+        <ng-container *ngFor="let statisticItem of gameConfig.statisticConfig">
+          <div
+            *ngIf="statisticItem === 'timer'"
+            class="background-wrapper statistic-item-wrapper">
+            <span class="statistic-item-label">
+              {{statisticItem}}:
+            </span>
+            <span class="statistic-item-value">
+              {{timerCounter}}
+            </span>
+          </div>
+          <div
+            *ngIf="statisticItem === 'words'"
+            class="background-wrapper statistic-item-wrapper">
+            <span class="statistic-item-label">
+              {{statisticItem}}:
+            </span>
+            <span class="statistic-item-value">
+              {{wordsProgress}} / {{sizeWordsRange}}
+            </span>
+          </div>
+          <div
+            *ngIf="statisticItem === 'score'"
+            class="background-wrapper statistic-item-wrapper">
+            <span class="statistic-item-label">
+              {{statisticItem}}:
+            </span>
+            <span class="statistic-item-value">
+              {{score}}
+            </span>
+          </div>
+        </ng-container>
       </div>
       <div class="game-control">
-        <div *ngIf="isStudyGameStarted" class="studyGameControl">
-          <button *ngIf="!isStudyGameRunning" class="btn btn-white" (click)="runStudyGame()">Start-stud</button>
-          <button *ngIf="isStudyGameRunning" class="btn btn-white" (click)="stopStudyGame()">Finish-stud</button>
-        </div>
-        <div *ngIf="isTestGameStarted" class="testGameControl">
-          <button *ngIf="!isTestGameRunning" class="btn btn-white" (click)="runTestGame()">{{timerButton}}-test</button>
-          <button *ngIf="isTestGameRunning" class="btn btn-white" (click)="stopTestGame()">{{timerButton}}-test</button>
+        <div
+          *ngIf="gameConfig"
+          class="testGameControl">
+          <button
+            *ngIf="!instance.isGameRunning()"
+            class="btn btn-white"
+            (click)="runGame()">{{timerButton}}</button>
+          <button
+            *ngIf="instance.isGameRunning()"
+            class="btn btn-white"
+            (click)="stopGame()">{{timerButton}}</button>
         </div>
       </div>
     </div>
-
   </div>
-
+</div>
+<div
+  *ngIf="isModalShow" (click)="isModalShow = false"
+  class="modal">
+  <div
+    class="modal-dialog"
+    (click)="$event.stopPropagation()">
+    <div class="modal-content">
+      <div class="modal-header">
+        <p class="modal-title">
+          Result
+        </p>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          (click)="isModalShow = false">
+          X
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="statistic-item-wrapper">
+          <span class="statistic-item-label">
+          Your score:
+          </span>
+          <span class="statistic-item-value">
+         {{score}}
+          </span>
+        </div>
+        <div class="statistic-item-wrapper">
+          <span class="statistic-item-label">
+            Words:
+          </span>
+          <span class="statistic-item-value">
+           {{wordsProgress}} / {{sizeWordsRange}}
+          </span>
+        </div>
+        <div class="statistic-item-wrapper">
+          <span class="statistic-item-label">
+            Wrong:
+          </span>
+          <span class="statistic-item-value">
+           {{mistake}}
+          </span>
+        </div>
+        <div class="statistic-item-wrapper">
+          <span class="statistic-item-label">
+            Mistake:
+          </span>
+          <span
+            *ngIf="mistake"
+            class="statistic-item-value">
+           {{mistake / sizeWordsRange * 100}}%
+          </span>
+          <span
+            *ngIf="!mistake"
+            class="statistic-item-value">
+           {{mistake}}%
+          </span>
+        </div>
+        <div class="statistic-item-wrapper">
+          <span class="statistic-item-label">
+            Time:
+          </span>
+          <span class="statistic-item-value">
+           {{totalGameTime | date : 'mm:ss'}}
+          </span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn-close"
+          (click)="isModalShow = false">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

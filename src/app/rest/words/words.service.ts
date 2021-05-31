@@ -1,28 +1,26 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
-import { map, tap } from 'rxjs/operators';
-import { WordRequestDto } from './word.request.dto';
-import { Observable } from 'rxjs';
-import { WordResponseDto } from './word.response.dto';
-import { FbCreateResponse } from './fb-create.response';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+
+import {map} from 'rxjs/operators';
+import {Observable} from 'rxjs';
+
+import {environment} from '../../../environments/environment';
+import {WordRequestDto} from './word.request.dto';
+import {WordResponseDto} from './word.response.dto';
+import {FbCreateResponse} from './fb-create.response';
 
 @Injectable()
 export class WordsService {
 
   constructor(private readonly http: HttpClient) { }
 
-  createUkraineWord(word: WordRequestDto): Observable<WordResponseDto> {
+  addUkraineWord(word: WordRequestDto): Observable<WordResponseDto> {
     return this.http.post<FbCreateResponse>(`${environment.fbDbUrl}/ukraineWords.json`, word)
       .pipe(
         map((response: FbCreateResponse) => ({
           ...word,
           id: response.name,
         })),
-        tap((response: WordResponseDto) => {
-            console.log(response);
-          },
-        ),
       );
   }
 
@@ -37,9 +35,10 @@ export class WordsService {
               id: key,
             }));
         }),
-        tap((response: WordResponseDto[]) => {
-          console.log(response);
-        }),
       );
+  }
+
+  deleteWord(id: string): Observable<void> {
+    return this.http.delete<void>(`${environment.fbDbUrl}/ukraineWords/${id}.json`);
   }
 }

@@ -1,1 +1,20 @@
-<button (click)="addWord()">Add word</button>
+<!--<button (click)="addWord()">Add word</button>-->
+<br>
+<br>
+<form [formGroup]="form" (ngSubmit)="addWord()">
+  <label>
+    word:
+    <input style="color: black" type="text" formControlName="word">
+  </label>
+  <label>
+    translate word:
+    <input style="color: black" type="text" formControlName="translateWord">
+  </label>
+  <button style="color: black" type="submit" [disabled]="form.invalid">Add word</button>
+</form>
+<br>
+<p *ngFor="let word of words; let idx = index">
+  {{idx + 1}}. {{word.word}} -
+  {{word.translateWord}}
+  <button style="color: black" (click)="deleteWord(word.id)">Delete</button>
+</p>

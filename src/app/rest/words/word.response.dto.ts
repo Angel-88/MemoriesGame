@@ -5,7 +5,7 @@ export class WordResponseDto {
   id!: string;
 
   constructor(data?: WordResponseDto) {
-    if(data){
+    if (data){
       this.isVisible = data.isVisible;
       this.word = data.word;
       this.translateWord = data.translateWord;

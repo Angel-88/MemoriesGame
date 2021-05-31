@@ -3,9 +3,8 @@ export class WordRequestDto {
   word!: string;
   translateWord!: string;
 
-
   constructor(data?: WordRequestDto) {
-    if(data){
+    if (data) {
       this.isVisible = data.isVisible;
       this.word = data.word;
       this.translateWord = data.translateWord;

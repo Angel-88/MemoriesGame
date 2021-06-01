@@ -26,7 +26,7 @@ export abstract class Game {
   isGameRunning = false;
   isGameSectionShow = false;
 
-  private static getWordsRange(startIndex: number, endIndex: number, array: WordResponseDto[]): WordResponseDto[] {
+  protected getWordsRange(startIndex: number, endIndex: number, array: WordResponseDto[]): WordResponseDto[] {
     return array.slice(startIndex, endIndex);
   }
 
@@ -36,7 +36,7 @@ export abstract class Game {
     this.words = words;
     this.isGameConfigShow = false;
     const shuffledWords = this.shuffle(words).map(word => new WordResponseDto(word));
-    const wordsRange = Game.getWordsRange(this.wordsRangeStartIndex, this.wordsRangeEndIndex, shuffledWords);
+    const wordsRange = this.getWordsRange(this.wordsRangeStartIndex, this.wordsRangeEndIndex, shuffledWords);
     this.initWordsColumns(wordsRange);
   }
 
@@ -53,7 +53,7 @@ export abstract class Game {
     this.resetAllGameVariable();
   }
 
-  private initWordsColumns(wordsRange: WordResponseDto[]): void {
+  protected initWordsColumns(wordsRange: WordResponseDto[]): void {
     this.wordsColumns.push(wordsRange);
     const wordsRandom = this.shuffle(wordsRange);
     this.wordsColumns.push(wordsRandom);

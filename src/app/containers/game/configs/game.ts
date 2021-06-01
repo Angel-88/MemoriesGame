@@ -13,7 +13,7 @@ export abstract class Game {
   score = 0;
   wordsProgress = 0;
   mistake = 0;
-  sizeWordsRange = 4;
+  sizeWordsRange = 10;
   protected wordsRangeStartIndex = 0;
   protected wordsRangeEndIndex = this.sizeWordsRange;
 

@@ -1,20 +1,32 @@
 <div class="container">
   <header class="header">
-    <h1 class="title">Memories words</h1>
+    <h1 class="title">Memory game</h1>
   </header>
-  <div *ngIf="gameInstance?.isGameConfigShow || isGameConfigShow" class="game-config">
-    <button class="btn btn-white mb-40" (click)="initGame(gameTypeEnum.STUDY)">Study</button>
-    <button class="btn btn-purple" (click)="initGame(gameTypeEnum.TEST)">Start test</button>
+  <div
+    *ngIf="gameInstance?.isGameConfigShow || isGameConfigShow"
+    class="game-config">
+    <button
+      class="btn btn-white mb-40"
+      (click)="initGame(gameTypeEnum.STUDY)">
+      Study
+    </button>
+    <button
+      class="btn btn-purple"
+      (click)="initGame(gameTypeEnum.TEST)">
+      Start test
+    </button>
   </div>
-  <div *ngIf="gameInstance?.isGameSectionShow" class="game-section">
+  <div
+    *ngIf="gameInstance?.isGameSectionShow"
+    class="game-section">
     <div class="game-field background-wrapper">
-      <div class="column" *ngFor="let wordsColumn of gameInstance.wordsColumns; let columnIndex = index">
+      <div
+        *ngFor="let wordsColumn of gameInstance.wordsColumns; let columnIndex = index"
+        class="column">
         <ng-container *ngFor="let word of wordsColumn">
           <button
-            [disabled]="!word.isVisible || !gameInstance.isGameRunning || (columnIndex === 1 && !gameInstance.selectedWord)"
             class="btn btn-word"
-            [class.opacity-zero]="!word.isVisible"
-            [class.btn-scale]="columnIndex === 0 && gameInstance.selectedWord?.id === word.id || columnIndex === 1 && gameInstance.selectedTranslateWord?.id === word.id"
+            [disabled]="!word.isVisible || !gameInstance.isGameRunning || (columnIndex === 1 && !gameInstance.selectedWord)"
             [class.btn-not-equal]="!gameInstance.equalingWords.isWordsEqual && (columnIndex === 0  && gameInstance.equalingWords.selectedWordId === word.id) || (columnIndex === 1  && gameInstance.equalingWords.selectedTranslateWordId === word.id)"
             [class.btn-equal]="gameInstance.equalingWords.isWordsEqual && gameInstance.equalingWords.selectedWordId === word.id"
             (click)="gameInstance.selectWord(columnIndex, word)">
@@ -66,12 +78,14 @@
           <button
             *ngIf="!gameInstance.isGameRunning"
             class="btn btn-white"
-            (click)="runGame()">Start
+            (click)="runGame()">
+            Start
           </button>
           <button
             *ngIf="gameInstance.isGameRunning"
             class="btn btn-white"
-            (click)="gameInstance.stopGame()">Finish
+            (click)="gameInstance.stopGame()">
+            Finish
           </button>
         </div>
       </div>
@@ -79,7 +93,8 @@
   </div>
 </div>
 <div
-  *ngIf="gameInstance?.isModalShow" (click)="gameInstance.resetGame()"
+  *ngIf="gameInstance?.isModalShow"
+  (click)="gameInstance.resetGame()"
   class="modal">
   <div
     class="modal-dialog"

@@ -9,7 +9,7 @@ export class TestGame extends Game {
 
   readonly gameType = GameTypeEnum.TEST;
 
-  private readonly timerConfig = 10;
+  private readonly timerConfig = 60;
   timerCounter = this.timerConfig;
   private timerId!: string | null;
   private readonly timerName = 'Test game';
@@ -64,5 +64,4 @@ export class TestGame extends Game {
       this.stopGame();
     }
   }
-
 }

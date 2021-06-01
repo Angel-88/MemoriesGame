@@ -34,6 +34,7 @@ export class GameComponent implements OnInit {
   initGame(gameType: GameTypeEnum): void {
     this.gameInstance = GameFactory.getInstance(gameType);
     this.gameInstance.isGameSectionShow = true;
+    this.gameInstance.isGameConfigShow = false;
     this.isGameConfigShow = false;
   }
 

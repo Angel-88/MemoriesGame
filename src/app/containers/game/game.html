@@ -2,22 +2,22 @@
   <header class="header">
     <h1 class="title">Memories words</h1>
   </header>
-  <div *ngIf="!gameConfig && !isModalShow" class="game-config">
+  <div *ngIf="gameInstance?.isGameConfigShow || isGameConfigShow" class="game-config">
     <button class="btn btn-white mb-40" (click)="initGame(gameTypeEnum.STUDY)">Study</button>
     <button class="btn btn-purple" (click)="initGame(gameTypeEnum.TEST)">Start test</button>
   </div>
-  <div *ngIf="gameConfig" class="game-section">
+  <div *ngIf="gameInstance?.isGameSectionShow" class="game-section">
     <div class="game-field background-wrapper">
-      <div class="column" *ngFor="let wordsColumn of wordsColumns; let columnIndex = index">
+      <div class="column" *ngFor="let wordsColumn of gameInstance.wordsColumns; let columnIndex = index">
         <ng-container *ngFor="let word of wordsColumn">
           <button
-            [disabled]="!word.isVisible || !instance?.isGameRunning() || (columnIndex === 1 && !selectedWord)"
+            [disabled]="!word.isVisible || !gameInstance.isGameRunning || (columnIndex === 1 && !gameInstance.selectedWord)"
             class="btn btn-word"
             [class.opacity-zero]="!word.isVisible"
-            [class.btn-scale]="columnIndex === 0 && this.selectedWord?.id === word.id || columnIndex === 1 && this.selectedTranslateWord?.id === word.id"
-            [class.btn-not-equal]="notEqual.isNotEqual && (columnIndex === 0  && notEqual.selectedWordId === word.id) || (columnIndex === 1  && notEqual.selectedTranslateWordId === word.id)"
-            [class.btn-equal]="!notEqual.isNotEqual && notEqual.selectedWordId === word.id"
-            (click)="clickToWord(columnIndex, word)">
+            [class.btn-scale]="columnIndex === 0 && gameInstance.selectedWord?.id === word.id || columnIndex === 1 && gameInstance.selectedTranslateWord?.id === word.id"
+            [class.btn-not-equal]="!gameInstance.equalingWords.isWordsEqual && (columnIndex === 0  && gameInstance.equalingWords.selectedWordId === word.id) || (columnIndex === 1  && gameInstance.equalingWords.selectedTranslateWordId === word.id)"
+            [class.btn-equal]="gameInstance.equalingWords.isWordsEqual && gameInstance.equalingWords.selectedWordId === word.id"
+            (click)="gameInstance.selectWord(columnIndex, word)">
             <span *ngIf="columnIndex === 0">
               {{word.word.toLowerCase()}}
             </span>
@@ -31,23 +31,23 @@
     <div class="game-control-wrapper">
       <div class="game-statistic">
         <div
-          *ngIf="instance?.gameType === gameTypeEnum.TEST"
+          *ngIf="gameInstance.gameType === gameTypeEnum.TEST"
           class="background-wrapper statistic-item-wrapper">
           <span class="statistic-item-label">
             timer:
           </span>
           <span class="statistic-item-value">
-            {{timerCounter}}
+            {{gameInstance.timerCounter}}
           </span>
         </div>
         <div
-          *ngIf="instance?.gameType === gameTypeEnum.TEST"
+          *ngIf="gameInstance.gameType === gameTypeEnum.TEST"
           class="background-wrapper statistic-item-wrapper">
           <span class="statistic-item-label">
             words:
           </span>
           <span class="statistic-item-value">
-            {{wordsProgress}} / {{sizeWordsRange}}
+            {{gameInstance.wordsProgress}} / {{gameInstance.sizeWordsRange}}
           </span>
         </div>
         <div
@@ -56,23 +56,22 @@
             score:
           </span>
           <span class="statistic-item-value">
-            {{score}}
+            {{gameInstance.score}}
           </span>
         </div>
       </div>
       <div class="game-control">
         <div
-          *ngIf="gameConfig"
           class="testGameControl">
           <button
-            *ngIf="!instance?.isGameRunning()"
+            *ngIf="!gameInstance.isGameRunning"
             class="btn btn-white"
             (click)="runGame()">Start
           </button>
           <button
-            *ngIf="instance?.isGameRunning()"
+            *ngIf="gameInstance.isGameRunning"
             class="btn btn-white"
-            (click)="stopGame()">Finish
+            (click)="gameInstance.stopGame()">Finish
           </button>
         </div>
       </div>
@@ -80,7 +79,7 @@
   </div>
 </div>
 <div
-  *ngIf="isModalShow" (click)="isModalShow = false"
+  *ngIf="gameInstance?.isModalShow" (click)="gameInstance.resetGame()"
   class="modal">
   <div
     class="modal-dialog"
@@ -94,7 +93,7 @@
           type="button"
           class="btn-close"
           aria-label="Close"
-          (click)="isModalShow = false">
+          (click)="gameInstance.resetGame()">
           X
         </button>
       </div>
@@ -104,7 +103,7 @@
           Your score:
           </span>
           <span class="statistic-item-value">
-         {{score}}
+         {{gameInstance.score}}
           </span>
         </div>
         <div class="statistic-item-wrapper">
@@ -112,24 +111,24 @@
             Words:
           </span>
           <span
-            *ngIf="instance?.gameType === gameTypeEnum.TEST"
+            *ngIf="gameInstance.gameType === gameTypeEnum.TEST"
             class="statistic-item-value">
-           {{wordsProgress}} / {{sizeWordsRange}}
+           {{gameInstance.wordsProgress}} / {{gameInstance.sizeWordsRange}}
           </span>
           <span
-            *ngIf="instance?.gameType === gameTypeEnum.STUDY"
+            *ngIf="gameInstance.gameType === gameTypeEnum.STUDY"
             class="statistic-item-value">
-           {{wordsProgress}}
+           {{gameInstance.wordsProgress}}
           </span>
         </div>
         <div
-          *ngIf="instance?.gameType === gameTypeEnum.TEST"
+          *ngIf="gameInstance.gameType === gameTypeEnum.TEST"
           class="statistic-item-wrapper">
           <span class="statistic-item-label">
             Wrong:
           </span>
           <span class="statistic-item-value">
-           {{mistake}}
+           {{gameInstance.mistake}}
           </span>
         </div>
         <div class="statistic-item-wrapper">
@@ -137,39 +136,39 @@
             Mistake:
           </span>
           <span
-            *ngIf="mistake && instance?.gameType === gameTypeEnum.TEST"
+            *ngIf="gameInstance.mistake && gameInstance.gameType === gameTypeEnum.TEST"
             class="statistic-item-value">
-           {{mistake}} - {{mistake / (mistake + wordsProgress) * 100 | number : '1.0-0'}}%
+           {{gameInstance.mistake}} - {{gameInstance.mistake / (gameInstance.mistake + gameInstance.wordsProgress) * 100 | number : '1.0-0'}}%
           </span>
           <span
-            *ngIf="!mistake  && instance?.gameType === gameTypeEnum.TEST"
+            *ngIf="!gameInstance.mistake  && gameInstance.gameType === gameTypeEnum.TEST"
             class="statistic-item-value">
-           {{mistake}}%
+           {{gameInstance.mistake}}%
           </span>
           <span
-            *ngIf="instance?.gameType === gameTypeEnum.STUDY"
+            *ngIf="gameInstance.gameType === gameTypeEnum.STUDY"
             class="statistic-item-value">
-           {{mistake}}
+           {{gameInstance.mistake}}
           </span>
         </div>
         <div
-          *ngIf="instance?.gameType === gameTypeEnum.TEST"
+          *ngIf="gameInstance.gameType === gameTypeEnum.TEST"
           class="statistic-item-wrapper">
           <span class="statistic-item-label">
             Time:
           </span>
           <span class="statistic-item-value">
-           {{totalGameTime | date : 'mm:ss'}}
+           {{gameInstance.totalGameTime | date : 'mm:ss'}}
           </span>
         </div>
         <div
-          *ngIf="instance?.gameType === gameTypeEnum.TEST"
+          *ngIf="gameInstance.gameType === gameTypeEnum.TEST && (gameInstance.wordsProgress ||gameInstance.mistake)"
           class="statistic-item-wrapper">
           <span class="statistic-item-label">
             Av. answer time:
           </span>
           <span class="statistic-item-value">
-           {{totalGameTime.getSeconds() / (mistake + wordsProgress) | number : '1.0-2'}} sec
+           {{gameInstance.totalGameTime.getSeconds() / (gameInstance.mistake + gameInstance.wordsProgress) | number : '1.0-2'}} sec
           </span>
         </div>
       </div>
@@ -177,7 +176,7 @@
         <button
           type="button"
           class="btn-close"
-          (click)="isModalShow = false">
+          (click)="gameInstance.resetGame()">
           Close
         </button>
       </div>

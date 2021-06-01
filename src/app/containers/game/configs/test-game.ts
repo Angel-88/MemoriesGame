@@ -17,10 +17,6 @@ export class TestGame extends Game {
   gameEndTime!: number;
   totalGameTime!: Date;
 
-  // constructor() {
-  //   super();
-  // }
-
   checkType(gameType: GameTypeEnum): boolean {
     return gameType === GameTypeEnum.TEST;
   }
@@ -37,6 +33,15 @@ export class TestGame extends Game {
     this.gameEndTime = new Date().getTime();
     this.totalGameTime = new Date(this.gameEndTime - this.gameStartTime);
     this.unsubscribeTimer();
+  }
+
+  selectWord(columnIndex: number, word: WordResponseDto): void {
+    super.selectWord(columnIndex, word);
+    setTimeout(() => {
+      if (!this.wordsColumns[0].some(wordItem => wordItem.isVisible)) {
+        this.stopGame();
+      }
+    }, 300);
   }
 
   private subscribeTimer(): void {

@@ -71,30 +71,11 @@ export abstract class Game {
         word.isVisible = !this.equalingWords.isWordsEqual;
         this.equalingWords = {isWordsEqual: true, selectedWordId: '', selectedTranslateWordId: ''};
       }, 300);
-      setTimeout(() => {
-        if (!this.wordsColumns[0].some(wordItem => wordItem.isVisible) && this.gameType === GameTypeEnum.STUDY) {
-          this.wordsColumns = [];
-          if (this.words.length <= this.wordsRangeEndIndex) {
-            this.words = this.shuffle(this.words);
-            this.words.forEach(shuffleWord => shuffleWord.isVisible = true);
-            this.wordsRangeStartIndex = 0;
-            this.wordsRangeEndIndex = this.sizeWordsRange;
-          } else {
-            this.wordsRangeStartIndex += this.sizeWordsRange;
-            this.wordsRangeEndIndex += this.sizeWordsRange;
-          }
-          const wordsRange = this.getWordsRange(this.wordsRangeStartIndex, this.wordsRangeEndIndex, this.words);
-          this.initWordsColumns(wordsRange);
-        }
-        if (!this.wordsColumns[0].some(wordItem => wordItem.isVisible) && this.gameType === GameTypeEnum.TEST) {
-          this.stopGame();
-        }
-      }, 300);
       this.selectedWord = this.selectedTranslateWord = {word: '', translateWord: '', id: '', isVisible: false};
     }
   }
 
-  private shuffle(array: WordResponseDto[]): WordResponseDto[] {
+  protected shuffle(array: WordResponseDto[]): WordResponseDto[] {
     return [...array].sort(() => Math.random() - 0.5);
   }
 

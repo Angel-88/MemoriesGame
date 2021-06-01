@@ -4,7 +4,7 @@ import {WordResponseDto} from '../../../rest/words/word.response.dto';
 
 export class StudyGame extends Game {
 
-  gameType = GameTypeEnum.STUDY;
+  readonly gameType = GameTypeEnum.STUDY;
 
   checkType(gameType: GameTypeEnum): boolean {
     return gameType === GameTypeEnum.STUDY;

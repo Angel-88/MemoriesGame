@@ -3,7 +3,7 @@ import {WordResponseDto} from '../../../rest/words/word.response.dto';
 
 export abstract class Game {
 
-  abstract gameType: GameTypeEnum;
+  readonly abstract gameType: GameTypeEnum;
   timerCounter!: number;
   totalGameTime!: Date;
 
@@ -14,8 +14,8 @@ export abstract class Game {
   wordsProgress = 0;
   mistake = 0;
   sizeWordsRange = 4;
-  wordsRangeStartIndex = 0;
-  wordsRangeEndIndex = this.sizeWordsRange;
+  protected wordsRangeStartIndex = 0;
+  protected wordsRangeEndIndex = this.sizeWordsRange;
 
   selectedWord!: WordResponseDto;
   selectedTranslateWord!: WordResponseDto;
@@ -26,13 +26,17 @@ export abstract class Game {
   isGameRunning = false;
   isGameSectionShow = false;
 
+  private static getWordsRange(startIndex: number, endIndex: number, array: WordResponseDto[]): WordResponseDto[] {
+    return array.slice(startIndex, endIndex);
+  }
+
   abstract checkType(gameType: GameTypeEnum): boolean;
 
   runGame(words: WordResponseDto[]): void {
     this.words = words;
     this.isGameConfigShow = false;
     const shuffledWords = this.shuffle(words).map(word => new WordResponseDto(word));
-    const wordsRange = this.getWordsRange(this.wordsRangeStartIndex, this.wordsRangeEndIndex, shuffledWords);
+    const wordsRange = Game.getWordsRange(this.wordsRangeStartIndex, this.wordsRangeEndIndex, shuffledWords);
     this.initWordsColumns(wordsRange);
   }
 
@@ -49,14 +53,10 @@ export abstract class Game {
     this.resetAllGameVariable();
   }
 
-  initWordsColumns(wordsRange: WordResponseDto[]): void {
+  private initWordsColumns(wordsRange: WordResponseDto[]): void {
     this.wordsColumns.push(wordsRange);
     const wordsRandom = this.shuffle(wordsRange);
     this.wordsColumns.push(wordsRandom);
-  }
-
-  getWordsRange(startIndex: number, endIndex: number, array: WordResponseDto[]): WordResponseDto[] {
-    return array.slice(startIndex, endIndex);
   }
 
   selectWord(columnIndex: number, word: WordResponseDto): void {

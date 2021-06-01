@@ -5,16 +5,16 @@ import {WordResponseDto} from '../../../rest/words/word.response.dto';
 
 export class TestGame extends Game {
 
-  simpleTimer: SimpleTimer = new SimpleTimer();
+  private readonly simpleTimer: SimpleTimer = new SimpleTimer();
 
-  gameType = GameTypeEnum.TEST;
+  readonly gameType = GameTypeEnum.TEST;
 
-  timerConfig = 10;
+  private readonly timerConfig = 10;
   timerCounter = this.timerConfig;
-  timerId!: string | null;
-  timerName = 'Test game';
-  gameStartTime!: number;
-  gameEndTime!: number;
+  private timerId!: string | null;
+  private readonly timerName = 'Test game';
+  private gameStartTime!: number;
+  private gameEndTime!: number;
   totalGameTime!: Date;
 
   checkType(gameType: GameTypeEnum): boolean {

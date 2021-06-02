@@ -35,13 +35,11 @@ export class TestGame extends Game {
     this.unsubscribeTimer();
   }
 
-  selectWord(columnIndex: number, word: WordResponseDto): void {
-    super.selectWord(columnIndex, word);
-    setTimeout(() => {
-      if (!this.wordsColumns[0].some(wordItem => wordItem.isVisible)) {
-        this.stopGame();
-      }
-    }, 300);
+  protected callbackAfterSelectWord(word: WordResponseDto): void {
+    super.callbackAfterSelectWord(word);
+    if (!this.wordsColumns[0].some(wordItem => wordItem.isVisible)) {
+      this.stopGame();
+    }
   }
 
   private subscribeTimer(): void {

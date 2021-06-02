@@ -10,10 +10,9 @@ export class StudyGame extends Game {
     return gameType === GameTypeEnum.STUDY;
   }
 
-  selectWord(columnIndex: number, word: WordResponseDto): void {
-    super.selectWord(columnIndex, word);
-    setTimeout(() => {
-      if (!this.wordsColumns[0].some(wordItem => wordItem.isVisible)) {
+  protected callbackAfterSelectWord(word: WordResponseDto): void {
+        super.callbackAfterSelectWord(word);
+        if (!this.wordsColumns[0].some(wordItem => wordItem.isVisible)) {
         this.wordsColumns = [];
         if (this.words.length <= this.wordsRangeEndIndex) {
           this.words = this.shuffle(this.words);
@@ -26,7 +25,6 @@ export class StudyGame extends Game {
         }
         const wordsRange = this.getWordsRange(this.wordsRangeStartIndex, this.wordsRangeEndIndex, this.words);
         this.initWordsColumns(wordsRange);
-      }
-    }, 300);
+    }
   }
 }

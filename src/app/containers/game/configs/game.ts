@@ -66,11 +66,15 @@ export abstract class Game {
       this.selectedTranslateWord = word;
       this.compareSelectedWords();
       setTimeout(() => {
-        word.isVisible = !this.equalingWords.isWordsEqual;
-        this.equalingWords = {isWordsEqual: true, selectedWordId: '', selectedTranslateWordId: ''};
+        this.callbackAfterSelectWord(word);
       }, 300);
       this.selectedWord = this.selectedTranslateWord = null;
     }
+  }
+
+  protected callbackAfterSelectWord(word: WordResponseDto): void {
+    word.isVisible = !this.equalingWords.isWordsEqual;
+    this.equalingWords = {isWordsEqual: true, selectedWordId: '', selectedTranslateWordId: ''};
   }
 
   protected shuffle(array: WordResponseDto[]): WordResponseDto[] {

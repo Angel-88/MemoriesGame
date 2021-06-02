@@ -26,10 +26,12 @@
         <ng-container *ngFor="let word of wordsColumn">
           <button
             class="btn btn-word"
+            [class.opacity-zero]="!word.isVisible"
+            [class.btn-scale]="columnIndex === 0 && gameInstance.selectedWord?.id === word.id || columnIndex === 1 && gameInstance.selectedTranslateWord?.id === word.id"
             [disabled]="!word.isVisible || !gameInstance.isGameRunning || (columnIndex === 1 && !gameInstance.selectedWord)"
             [class.btn-not-equal]="!gameInstance.equalingWords.isWordsEqual && (columnIndex === 0  && gameInstance.equalingWords.selectedWordId === word.id) || (columnIndex === 1  && gameInstance.equalingWords.selectedTranslateWordId === word.id)"
             [class.btn-equal]="gameInstance.equalingWords.isWordsEqual && gameInstance.equalingWords.selectedWordId === word.id"
-            (click)="gameInstance.selectWord(columnIndex, word)">
+            (click)="gameInstance.selectWord(columnIndex, word);">
             <span *ngIf="columnIndex === 0">
               {{word.word.toLowerCase()}}
             </span>

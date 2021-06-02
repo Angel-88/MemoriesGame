@@ -17,8 +17,8 @@ export abstract class Game {
   protected wordsRangeStartIndex = 0;
   protected wordsRangeEndIndex = this.sizeWordsRange;
 
-  selectedWord!: WordResponseDto;
-  selectedTranslateWord!: WordResponseDto;
+  selectedWord!: WordResponseDto | null;
+  selectedTranslateWord!: WordResponseDto | null;
   equalingWords = {isWordsEqual: true, selectedWordId: '', selectedTranslateWordId: ''};
 
   isGameConfigShow = false;
@@ -65,13 +65,11 @@ export abstract class Game {
     } else {
       this.selectedTranslateWord = word;
       this.compareSelectedWords();
-      this.selectedWord = this.selectedTranslateWord;
-      this.selectedWord = this.selectedTranslateWord = new WordResponseDto();
       setTimeout(() => {
         word.isVisible = !this.equalingWords.isWordsEqual;
         this.equalingWords = {isWordsEqual: true, selectedWordId: '', selectedTranslateWordId: ''};
       }, 300);
-      this.selectedWord = this.selectedTranslateWord = {word: '', translateWord: '', id: '', isVisible: false};
+      this.selectedWord = this.selectedTranslateWord = null;
     }
   }
 
@@ -89,7 +87,7 @@ export abstract class Game {
   }
 
   private compareSelectedWords(): void {
-    const equal = this.selectedWord.id === this.selectedTranslateWord.id;
+    const equal = this.selectedWord?.id === this.selectedTranslateWord?.id;
     if (equal) {
       this.wordsProgress++;
       this.score++;
@@ -97,7 +95,7 @@ export abstract class Game {
       this.mistake++;
     }
     this.equalingWords.isWordsEqual = equal;
-    this.equalingWords.selectedWordId = this.selectedWord.id;
-    this.equalingWords.selectedTranslateWordId = this.selectedTranslateWord.id;
+    this.equalingWords.selectedWordId = this.selectedWord?.id as string;
+    this.equalingWords.selectedTranslateWordId = this.selectedTranslateWord?.id as string;
   }
 }

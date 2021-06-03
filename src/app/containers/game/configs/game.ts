@@ -10,7 +10,7 @@ export abstract class Game {
   words: WordResponseDto[] = [];
 
   timerCounter!: number;
-  private _totalGameTime!: Date;
+  totalGameTime!: Date;
   private _score = 0;
   private _wordsProgress = 0;
   private _mistake = 0;
@@ -33,10 +33,6 @@ export abstract class Game {
 
   get sizeWordsRange(): number {
     return this._sizeWordsRange;
-  }
-
-  get totalGameTime(): Date {
-    return this._totalGameTime;
   }
 
   selectedWord!: WordResponseDto | null;

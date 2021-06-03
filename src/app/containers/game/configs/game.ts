@@ -1,21 +1,43 @@
+// tslint:disable:variable-name
 import {GameTypeEnum} from '../shared/enums/game-type.enum';
 import {WordResponseDto} from '../../../rest/words/word.response.dto';
 
 export abstract class Game {
 
   readonly abstract gameType: GameTypeEnum;
-  timerCounter!: number;
-  totalGameTime!: Date;
 
   wordsColumns: WordResponseDto[][] = [];
   words: WordResponseDto[] = [];
 
-  score = 0;
-  wordsProgress = 0;
-  mistake = 0;
-  sizeWordsRange = 10;
+  timerCounter!: number;
+  private _totalGameTime!: Date;
+  private _score = 0;
+  private _wordsProgress = 0;
+  private _mistake = 0;
+  private readonly _sizeWordsRange = 10;
+
   protected wordsRangeStartIndex = 0;
-  protected wordsRangeEndIndex = this.sizeWordsRange;
+  protected wordsRangeEndIndex = this._sizeWordsRange;
+
+  get score(): number {
+    return this._score;
+  }
+
+  get wordsProgress(): number {
+    return this._wordsProgress;
+  }
+
+  get mistake(): number {
+    return this._mistake;
+  }
+
+  get sizeWordsRange(): number {
+    return this._sizeWordsRange;
+  }
+
+  get totalGameTime(): Date {
+    return this._totalGameTime;
+  }
 
   selectedWord!: WordResponseDto | null;
   selectedTranslateWord!: WordResponseDto | null;
@@ -50,7 +72,7 @@ export abstract class Game {
   resetGame(): void {
     this.isModalShow = false;
     this.isGameConfigShow = true;
-    this.resetAllGameVariable();
+    this.resetAllGameVariables();
   }
 
   protected initWordsColumns(wordsRange: WordResponseDto[]): void {
@@ -81,22 +103,22 @@ export abstract class Game {
     return [...array].sort(() => Math.random() - 0.5);
   }
 
-  private resetAllGameVariable(): void {
+  private resetAllGameVariables(): void {
     this.wordsColumns = [];
-    this.wordsProgress = 0;
-    this.score = 0;
-    this.mistake = 0;
+    this._wordsProgress = 0;
+    this._score = 0;
+    this._mistake = 0;
     this.wordsRangeStartIndex = 0;
-    this.wordsRangeEndIndex = this.sizeWordsRange;
+    this.wordsRangeEndIndex = this._sizeWordsRange;
   }
 
   private compareSelectedWords(): void {
     const equal = this.selectedWord?.id === this.selectedTranslateWord?.id;
     if (equal) {
-      this.wordsProgress++;
-      this.score++;
+      this._wordsProgress++;
+      this._score++;
     } else {
-      this.mistake++;
+      this._mistake++;
     }
     this.equalingWords.isWordsEqual = equal;
     this.equalingWords.selectedWordId = this.selectedWord?.id as string;

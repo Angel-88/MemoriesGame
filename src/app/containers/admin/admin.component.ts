@@ -28,8 +28,8 @@ export class AdminComponent implements OnInit {
   addWord(): void {
     const word = this.form.controls.word.value.toLowerCase();
     const translateWord = this.form.controls.translateWord.value.toLowerCase();
-    const myWord: WordRequestDto = {word, isVisible: true, translateWord};
-    this.wordsService.addUkraineWord(myWord).subscribe(res => {
+    const wordRequestDto: WordRequestDto = {word, isVisible: true, translateWord};
+    this.wordsService.addUkraineWord(wordRequestDto).subscribe(res => {
       this.words.push(res);
       this.form.reset();
     });
